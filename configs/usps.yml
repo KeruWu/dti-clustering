@@ -25,4 +25,4 @@ training:
   val_stat_interval: 50
   check_cluster_interval: 50
   seed: 9995
-  visualizer_port:
+  visualizer_port: D
