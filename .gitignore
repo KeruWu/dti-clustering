@@ -32,3 +32,6 @@ jz_*
 report.sh
 /notebook
 set_params.sh
+
+#pyCharm files
+.idea
