@@ -35,3 +35,6 @@ set_params.sh
 
 #pyCharm files
 .idea
+
+#env yml
+environment.yml

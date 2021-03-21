@@ -1,12 +1,14 @@
 from functools import lru_cache
-
+import os
+import mrcfile
 from scipy import io
+import numpy as np
 from torch.utils.data.dataset import Dataset as TorchDataset
 from torchvision.transforms import Compose, ToTensor
 
 from .torch_transforms import TensorResize
-from utils import coerce_to_path_and_check_exist
-from utils.path import DATASETS_PATH
+from src.utils import coerce_to_path_and_check_exist
+from src.utils.path import DATASETS_PATH
 
 
 class AffNISTTestDataset(TorchDataset):
@@ -53,7 +55,6 @@ class AffNISTTestDataset(TorchDataset):
         return Compose(transform)
 
 
-
 class EMPIAR_10406_DATASET(TorchDataset):
     root = DATASETS_PATH
     name = '10406'
@@ -63,9 +64,9 @@ class EMPIAR_10406_DATASET(TorchDataset):
     n_val = 1000
 
     def __init__(self, split, **kwargs):
-        self.data_path = coerce_to_path_and_check_exist(self.root / 'affNIST_test.mat')
+        self.data_path = coerce_to_path_and_check_exist(self.root / 'name/')
         self.split = split
-        data, labels = self.load_mat(self.data_path)
+        data, labels = self.load_mrcs(self.data_path)
         if split == 'val':
             data, labels = data[:self.n_val], labels[:self.n_val]
         self.data, self.labels = data, labels
@@ -77,11 +78,15 @@ class EMPIAR_10406_DATASET(TorchDataset):
             assert len(self.img_size) == 2
 
     @staticmethod
-    def load_mat(data_path):
-        mat = io.loadmat(data_path)['affNISTdata']
-        data = mat['image'][0][0].transpose().reshape(-1, 40, 40)
-        labels = mat['label_int'][0][0][0]
-        return data, labels
+    def load_mrcs(data_path):
+        particles = []
+        for filename in [f for f in os.listdir(data_path) if f.endswith('.mrcs')]:
+            with mrcfile.open(data_path + filename) as mrc:
+                particle = mrc.data
+            particles.append(particle)
+        particles = np.asarry(particles)
+        labels = np.arange(0, particle.shape[0])
+        return particles, labels
 
     def __len__(self):
         return self.size
