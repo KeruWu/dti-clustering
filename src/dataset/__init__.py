@@ -1,4 +1,4 @@
-from .custom import AffNISTTestDataset
+from .custom import AffNISTTestDataset, EMPIAR_10406_DATASET
 from .hdf5 import FRGCDataset
 from .raw import InstagramDataset, MegaDepthDataset
 from .torchvision import (FashionMNISTDataset, MNISTDataset, MNISTTestDataset, MNISTColorDataset, MNIST1kDataset,
@@ -25,4 +25,7 @@ def get_dataset(dataset_name):
         'mnist_1k': MNIST1kDataset,
         'svhn': SVHNDataset,
         'usps': USPSDataset,
+
+        # EMPIAR
+        '10406': EMPIAR_10406_DATASET,
     }[dataset_name]
