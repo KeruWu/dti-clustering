@@ -612,6 +612,7 @@ if __name__ == "__main__":
         cfg = yaml.load(fp, Loader=yaml.FullLoader)
     seed = cfg["training"].get("seed", 4321)
     dataset = cfg["dataset"]["name"]
+    print(args.tag)
     run_dir = RUNS_PATH / dataset / args.tag
 
     trainer = Trainer(config, run_dir, seed=seed)
