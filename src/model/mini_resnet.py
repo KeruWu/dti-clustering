@@ -32,11 +32,12 @@ import torch.nn.functional as F
 import torch.nn.init as init
 
 
-__all__ = ['ResNet', 'resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']
+__all__ = ['ResNet', 'resnet8', 'resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']
 
 
 def get_resnet_model(name):
     return {
+        'resnet8' : resnet8,
         'resnet20': resnet20,
         'resnet32': resnet32,
         'resnet44': resnet44,
@@ -126,6 +127,10 @@ class ResNet(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+
+def resnet8(in_channels=3, num_classes=10):
+    return ResNet(BasicBlock, [1, 1, 1], in_channels, num_classes)
 
 
 def resnet20(in_channels=3, num_classes=10):

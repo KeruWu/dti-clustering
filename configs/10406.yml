@@ -3,7 +3,7 @@ dataset:
 model:
   name: dtikmeans
   n_prototypes: 10
-  encoder_name: resnet20
+  encoder_name: resnet8
   transformation_sequence: identity_affine
   curriculum_learning: [5]
   grid_size: 4
