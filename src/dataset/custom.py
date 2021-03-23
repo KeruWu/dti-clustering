@@ -7,12 +7,12 @@ from torch.utils.data.dataset import Dataset as TorchDataset
 from torchvision.transforms import Compose, ToTensor
 
 from .torch_transforms import TensorResize
-#from src.utils import coerce_to_path_and_check_exist
-#from src.utils.path import DATASETS_PATH
+from utils import coerce_to_path_and_check_exist
+from utils.path import DATASETS_PATH
 
 
 class AffNISTTestDataset(TorchDataset):
-    #root = DATASETS_PATH
+    root = DATASETS_PATH
     name = 'affnist_test'
     n_classes = 10
     n_channels = 1
@@ -20,7 +20,7 @@ class AffNISTTestDataset(TorchDataset):
     n_val = 1000
 
     def __init__(self, split, **kwargs):
-        #self.data_path = coerce_to_path_and_check_exist(self.root / 'affNIST_test.mat')
+        self.data_path = coerce_to_path_and_check_exist(self.root / 'affNIST_test.mat')
         self.split = split
         data, labels = self.load_mat(self.data_path)
         if split == 'val':
@@ -56,7 +56,7 @@ class AffNISTTestDataset(TorchDataset):
 
 
 class EMPIAR_10406_DATASET(TorchDataset):
-    #root = DATASETS_PATH
+    root = DATASETS_PATH
     name = '10406'
     n_classes = 10
     n_channels = 1
@@ -64,7 +64,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
     n_val = 1000
 
     def __init__(self, split, **kwargs):
-        self.data_path = './'#coerce_to_path_and_check_exist(self.root / 'name/')
+        self.data_path = coerce_to_path_and_check_exist(self.root / '10406/')
         self.split = split
         data, labels = self.load_mrcs(self.data_path)
         if split == 'val':
