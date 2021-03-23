@@ -85,7 +85,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
                 particle = mrc.data
             particles.append(particle)
         particles = np.vstack(particles)
-        labels = np.arange(0, particle.shape[0])
+        labels = np.zeros(particles.shape[0])
         return particles, labels
 
     def __len__(self):
