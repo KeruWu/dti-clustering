@@ -1,5 +1,5 @@
 dataset:
-  name: 10406
+  name: E10406
 model:
   name: dtikmeans
   n_prototypes: 10
