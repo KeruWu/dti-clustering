@@ -27,5 +27,5 @@ def get_dataset(dataset_name):
         'usps': USPSDataset,
 
         # EMPIAR
-        '10406': EMPIAR_10406_DATASET,
+        'E10406': EMPIAR_10406_DATASET,
     }[dataset_name]
