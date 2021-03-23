@@ -81,7 +81,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
     def load_mrcs(data_path):
         particles = []
         for filename in [f for f in os.listdir(data_path) if f.endswith('.mrcs')]:
-            with mrcfile.open(data_path + filename) as mrc:
+            with mrcfile.open(data_path / filename) as mrc:
                 particle = mrc.data
             particles.append(particle)
         particles = np.vstack(particles)
