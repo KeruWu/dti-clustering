@@ -64,7 +64,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
     n_val = 1000
 
     def __init__(self, split, **kwargs):
-        self.data_path = coerce_to_path_and_check_exist(self.root / '10406/')
+        self.data_path = coerce_to_path_and_check_exist('/content/drive/My Drive/cryoEM/project/dti-clustering/10406/')
         self.split = split
         data, labels = self.load_mrcs(self.data_path)
         if split == 'val':
