@@ -60,7 +60,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
     name = '10406'
     n_classes = 10
     n_channels = 1
-    img_size = (416, 416)
+    img_size = (208, 208)
     n_val = 1000
 
     def __init__(self, split, **kwargs):
@@ -83,10 +83,11 @@ class EMPIAR_10406_DATASET(TorchDataset):
         for filename in [f for f in os.listdir(data_path) if f.endswith('.mrcs')][:100]:
             with mrcfile.open(data_path / filename) as mrc:
                 particle = mrc.data
-            particle = particle[104: 312, 104: 312]
-            particles.append(particle)
+            particles.append(particle[:,104:312,104:312])
+            
         particles = np.vstack(particles)
         labels = np.zeros(particles.shape[0])
+        print(particles.shape)
         return particles, labels
 
     def __len__(self):
