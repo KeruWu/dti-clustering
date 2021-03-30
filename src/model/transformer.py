@@ -278,13 +278,35 @@ class ColorModule(_AbstractTransformationModule):
 ########################
 
 
+# class AffineModule(_AbstractTransformationModule):
+#     def __init__(self, in_channels, **kwargs):
+#         super().__init__()
+#         self.padding_mode = kwargs.get('padding_mode', 'border')
+#         self.regressor = nn.Sequential(nn.Linear(in_channels, N_HIDDEN_UNITS), nn.ReLU(True),
+#                                        nn.Linear(N_HIDDEN_UNITS, N_HIDDEN_UNITS), nn.ReLU(True),
+#                                        nn.Linear(N_HIDDEN_UNITS, 3 * 2))
+
+#         # Identity transformation parameters and regressor initialization
+#         self.register_buffer('identity', torch.cat([torch.eye(2, 2), torch.zeros(2, 1)], dim=1))
+#         self.regressor[-1].weight.data.zero_()
+#         self.regressor[-1].bias.data.zero_()
+
+#     def _transform(self, x, beta, inverse=False):
+#         beta = beta.view(-1, 2, 3) + self.identity
+#         if inverse:
+#             row = torch.tensor([[[0, 0, 1]]] * x.size(0), dtype=torch.float, device=beta.device)
+#             beta = torch.cat([beta, row], dim=1)
+#             beta = torch.inverse(beta)[:, :2, :]
+#         grid = F.affine_grid(beta, x.size(), align_corners=False)
+#         return F.grid_sample(x, grid, padding_mode=self.padding_mode, align_corners=False)
+
 class AffineModule(_AbstractTransformationModule):
     def __init__(self, in_channels, **kwargs):
         super().__init__()
         self.padding_mode = kwargs.get('padding_mode', 'border')
         self.regressor = nn.Sequential(nn.Linear(in_channels, N_HIDDEN_UNITS), nn.ReLU(True),
                                        nn.Linear(N_HIDDEN_UNITS, N_HIDDEN_UNITS), nn.ReLU(True),
-                                       nn.Linear(N_HIDDEN_UNITS, 3 * 2))
+                                       nn.Linear(N_HIDDEN_UNITS, 2 * 2))
 
         # Identity transformation parameters and regressor initialization
         self.register_buffer('identity', torch.cat([torch.eye(2, 2), torch.zeros(2, 1)], dim=1))
@@ -292,12 +314,26 @@ class AffineModule(_AbstractTransformationModule):
         self.regressor[-1].bias.data.zero_()
 
     def _transform(self, x, beta, inverse=False):
-        beta = beta.view(-1, 2, 3) + self.identity
+        beta = beta.view(-1, 2, 2)
+        tmp = torch.zeros(beta.shape[0], 2, 3, dtype=torch.float, device=beta.device)
+        tmp[:, 0, 0] = torch.cos(beta[:, 0, 0])
+        tmp[:, 0, 1] = torch.sin(beta[:, 0, 0])
+        tmp[:, 0, 2] = beta[:, 0, 1]
+        tmp[:, 1, 0] = torch.sin(beta[:, 1, 0])
+        tmp[:, 1, 1] = torch.cos(beta[:, 1, 0])
+        tmp[:, 1, 2] = beta[:, 1, 1]
+        #beta = beta.view(-1, 2, 3) + self.identity
+        #if inverse:
+        #    row = torch.tensor([[[0, 0, 1]]] * x.size(0), dtype=torch.float, device=beta.device)
+        #    beta = torch.cat([beta, row], dim=1)
+        #    beta = torch.inverse(beta)[:, :2, :]
+        #grid = F.affine_grid(beta, x.size(), align_corners=False)
+
         if inverse:
             row = torch.tensor([[[0, 0, 1]]] * x.size(0), dtype=torch.float, device=beta.device)
-            beta = torch.cat([beta, row], dim=1)
-            beta = torch.inverse(beta)[:, :2, :]
-        grid = F.affine_grid(beta, x.size(), align_corners=False)
+            tmp = torch.cat([tmp, row], dim=1)
+            tmp = torch.inverse(tmp)[:, :2, :]
+        grid = F.affine_grid(tmp, x.size(), align_corners=False)
         return F.grid_sample(x, grid, padding_mode=self.padding_mode, align_corners=False)
 
 
