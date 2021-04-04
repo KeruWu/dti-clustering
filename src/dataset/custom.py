@@ -3,6 +3,8 @@ import os
 import mrcfile
 from scipy import io
 import numpy as np
+from scipy.ndimage import gaussian_filter
+import cv2
 from torch.utils.data.dataset import Dataset as TorchDataset
 from torchvision.transforms import Compose, ToTensor
 
@@ -64,9 +66,13 @@ class EMPIAR_10406_DATASET(TorchDataset):
     n_val = 1000
 
     def __init__(self, split, **kwargs):
-        self.data_path = coerce_to_path_and_check_exist('/content/drive/My Drive/cryoEM/project/datasets/10406/')
+        # self.data_path = coerce_to_path_and_check_exist(self.root / '10406/')
+        # self.data_path = coerce_to_path_and_check_exist('/content/drive/My Drive/cryoEM/project/datasets/10406/')
+        
+        self.data_path = coerce_to_path_and_check_exist('/content/drive/My Drive/cryoEM/project/datasets/particle_stack/')
         self.split = split
         data, labels = self.load_mrcs(self.data_path)
+        data, labels = self.load_particle_stack(self.data_path)
         if split == 'val':
             data, labels = data[:self.n_val], labels[:self.n_val]
         self.data, self.labels = data, labels
@@ -89,6 +95,23 @@ class EMPIAR_10406_DATASET(TorchDataset):
         labels = np.zeros(particles.shape[0])
         print(particles.shape)
         return particles, labels
+        
+    @staticmethod
+    def load_particle_stack(data_path):
+
+        with mrcfile.open(data_path + 'particle_stack_0.mrc') as mrc:
+            particles = mrc.data
+        
+        processed_particles = []
+        for particle in particles:
+            blured_img = gaussian_filter(particle, sigma=9)
+            res = cv2.resize(blured_img, dsize=(100, 100))
+            processed_particles,append(res)
+            
+        processed_particles = np.vstack(processed_particles)
+        labels = np.zeros(processed_particles.shape[0])
+        print(processed_particles.shape)
+        return processed_particles, labels
 
     def __len__(self):
         return self.size
