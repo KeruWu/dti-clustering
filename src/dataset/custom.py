@@ -62,7 +62,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
     name = '10406'
     n_classes = 10
     n_channels = 1
-    img_size = (208, 208)
+    img_size = (100, 100)
     n_val = 1000
 
     def __init__(self, split, **kwargs):
@@ -71,7 +71,7 @@ class EMPIAR_10406_DATASET(TorchDataset):
         
         self.data_path = coerce_to_path_and_check_exist('/content/drive/My Drive/cryoEM/project/datasets/particle_stack/')
         self.split = split
-        data, labels = self.load_mrcs(self.data_path)
+        # data, labels = self.load_mrcs(self.data_path)
         data, labels = self.load_particle_stack(self.data_path)
         if split == 'val':
             data, labels = data[:self.n_val], labels[:self.n_val]
@@ -99,14 +99,14 @@ class EMPIAR_10406_DATASET(TorchDataset):
     @staticmethod
     def load_particle_stack(data_path):
 
-        with mrcfile.open(data_path + 'particle_stack_0.mrc') as mrc:
+        with mrcfile.open(data_path / 'particle_stack_0.mrc') as mrc:
             particles = mrc.data
         
         processed_particles = []
         for particle in particles:
             blured_img = gaussian_filter(particle, sigma=9)
             res = cv2.resize(blured_img, dsize=(100, 100))
-            processed_particles,append(res)
+            processed_particles.append(res)
             
         processed_particles = np.vstack(processed_particles)
         labels = np.zeros(processed_particles.shape[0])
